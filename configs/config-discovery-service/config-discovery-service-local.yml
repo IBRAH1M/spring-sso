@@ -7,6 +7,6 @@ spring:
     config:
       server:
         git:
-          uri: file:///${user.home}/Documents/projects/experimental/spring-sso-expermintal/configs/{application}
+          uri: http://www.github.com/spring-sso/configs/{application}
         bootstrap: true
         prefix: /configurations

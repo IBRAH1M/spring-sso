@@ -3,4 +3,4 @@ spring:
     name: config-discovery-service
   cloud:
     config:
-          uri: https://github.com/spring-cloud-samples/config-repo
+          uri: https://www.github.com/spring-sso/configs
