@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: config-discovery-service
-  cloud:
-    config:
-          uri: https://www.github.com/spring-sso/configs
