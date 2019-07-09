@@ -9,4 +9,3 @@ spring:
         git:
           uri: http://www.github.com/spring-sso/configs/{application}
         bootstrap: true
-        prefix: /configurations
