@@ -1,0 +1,19 @@
+spring:
+  security:
+    user:
+      password: 9fe4c25c-7858-4a18-bfe3-1cc8c577f2e7 # Must be set here tp be removed from start logs
+
+server:
+  port: 8081
+security:
+  user:
+
+  oauth2:
+    client:
+      client-id: asset-service
+      client-secret: assetservicesecret
+#      access-token-uri: http://localhost:8081/oauth/token
+#      user-authorization-uri: http://localhost:8081/oauth/authorize
+#      clientAuthenticationScheme: form
+    resource:
+      user-info-uri: http://localhost:8080/users/me

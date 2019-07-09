@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: config-discovery-service
+  cloud:
+    config:
+          uri: https://github.com/spring-cloud-samples/config-repo

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: config-discovery-service
+  profiles:
+    active: local
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///${user.home}/Documents/projects/experimental/spring-sso-expermintal/configs/{application}
+        bootstrap: true
+        prefix: /configurations
