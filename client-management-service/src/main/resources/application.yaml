@@ -1,0 +1,5 @@
+spring:
+  name: client-management-service
+
+server:
+  port: 9090
