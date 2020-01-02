@@ -3,7 +3,7 @@ package com.example.usermanagementservice.user
 import spock.lang.Specification
 import spock.lang.Subject
 
-class UserServiceTest extends Specification {
+class UserEntityServiceTest extends Specification {
 
     def mockUserRepository = Mock(UserRepository.class)
     @Subject
@@ -18,7 +18,7 @@ class UserServiceTest extends Specification {
 
         then:
         1 * mockUserRepository.findById("1") >> {
-            def mockUser = new User()
+            def mockUser = new UserEntity()
             mockUser.setId("1")
             Optional.of(mockUser)
         }

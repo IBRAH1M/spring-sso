@@ -26,11 +26,31 @@ class UserControllerIntegrationTest extends Specification {
 
         then:
         1 * mockUserService.get("1") >> {
-            def mockUser = new User()
+            def mockUser = new UserDto()
             mockUser.setId("1")
             mockUser
         }
         response.status == 200
         content.id == "1"
+    }
+
+    def "should return a list of users"() {
+        given:
+        def role = "ADMIN"
+
+        when:
+        def response = mockMvc.perform(get("$baseApiUrl?role=$role")).andReturn().getResponse()
+        def content = new JsonSlurper().parseText(response.getContentAsString())
+
+        then:
+        1 * mockUserService.getAll("ADMIN") >> {
+            def users = new ArrayList()
+            def u = new UserDto()
+            u.id = 1
+            users.add(u)
+            users
+        }
+        response.status == 200
+        content[0].id == '1'
     }
 }

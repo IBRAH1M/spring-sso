@@ -17,7 +17,7 @@ import java.util.Date;
 @Table(name = "users")
 //@EntityListeners(AuditingEntityListener.class)
 //@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
-public class User implements Serializable {
+public class UserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
