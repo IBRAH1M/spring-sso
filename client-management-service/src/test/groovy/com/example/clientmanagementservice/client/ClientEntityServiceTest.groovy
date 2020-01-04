@@ -3,7 +3,7 @@ package com.example.clientmanagementservice.client
 import spock.lang.Specification
 import spock.lang.Subject
 
-class ClientServiceTest extends Specification {
+class ClientEntityServiceTest extends Specification {
 
     def mockClientRepository = Mock(ClientRepository.class)
     @Subject
@@ -18,7 +18,7 @@ class ClientServiceTest extends Specification {
 
         then:
         1 * mockClientRepository.findById("1") >> {
-            def mockClient = new Client()
+            def mockClient = new ClientEntity()
             mockClient.setId("1")
             Optional.of(mockClient)
         }

@@ -9,7 +9,7 @@ import spock.lang.Specification
 
 @Slf4j
 @SpringBootTest
-class ClientManagementServiceE2eTests extends Specification {
+class ClientEntityManagementServiceE2ETests extends Specification {
 
     @Autowired(required = false)
     private ClientController clientController

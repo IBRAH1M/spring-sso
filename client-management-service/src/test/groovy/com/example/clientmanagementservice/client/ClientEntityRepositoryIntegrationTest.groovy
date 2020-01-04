@@ -9,7 +9,7 @@ import spock.lang.Subject
 import javax.persistence.EntityManager
 
 @DataJpaTest
-class ClientRepositoryIntegrationTest extends Specification {
+class ClientEntityRepositoryIntegrationTest extends Specification {
 
     @Autowired
     private EntityManager entityManager
@@ -25,19 +25,19 @@ class ClientRepositoryIntegrationTest extends Specification {
 
     def "should save a client to the database"() {
         given:
-        def client = new Client()
+        def client = new ClientEntity()
 
         when:
         def persistedClient = clientRepository.save(client)
 
         then:
-        def retrievedClient = entityManager.find(Client, "1")
+        def retrievedClient = entityManager.find(ClientEntity, "1")
         retrievedClient.id == persistedClient.id
     }
 
     def "should retrieve a client from the database given it id"() {
         given:
-        entityManager.persist(new Client())
+        entityManager.persist(new ClientEntity())
 
         when:
         def persistedClient = clientRepository.findById("2").get()
