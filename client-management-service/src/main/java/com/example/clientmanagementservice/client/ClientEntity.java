@@ -4,17 +4,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "clients")
-public class ClientEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ClientEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private String id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "name_ar")
+    private String nameAr;
 }

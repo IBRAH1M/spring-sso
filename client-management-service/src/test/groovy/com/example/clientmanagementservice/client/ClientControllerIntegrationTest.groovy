@@ -2,7 +2,6 @@ package com.example.clientmanagementservice.client
 
 import com.example.clientmanagementservice.client.exception.ResourceNotFoundException
 import groovy.json.JsonSlurper
-import groovy.util.logging.Slf4j
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
@@ -15,8 +14,7 @@ import static org.springframework.http.HttpStatus.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
 
-@Slf4j
-class ClientEntityControllerIntegrationTest extends Specification {
+class ClientControllerIntegrationTest extends Specification {
 
     def baseApiUrl = '/api/v1/clients'
     def mockClientService = Mock(ClientService.class)
@@ -25,9 +23,6 @@ class ClientEntityControllerIntegrationTest extends Specification {
     protected MockMvc mockMvc = standaloneSetup(clientController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build()
-
-    def setup() {
-    }
 
     def "should save a client"() {
         given:
@@ -40,11 +35,7 @@ class ClientEntityControllerIntegrationTest extends Specification {
         def content = new JsonSlurper().parseText(response.contentAsString)
 
         then:
-        1 * mockClientService.save(_) >> {
-            def mockClient = new ClientEntity()
-            mockClient.id = "1"
-            mockClient
-        }
+        1 * mockClientService.save(_) >> ClientDto.builder().id("1").build()
 
         expect:
         response.status == CREATED.value()
@@ -78,12 +69,7 @@ class ClientEntityControllerIntegrationTest extends Specification {
         def content = new JsonSlurper().parseText(response.contentAsString)
 
         then:
-        1 * mockClientService.get("1")
-        1 * mockClientService.update(_) >> {
-            def mockClient = new ClientEntity()
-            mockClient.id = "1"
-            mockClient
-        }
+        1 * mockClientService.update(_) >> ClientDto.builder().id("1").build()
 
         expect:
         response.status == OK.value()
@@ -116,8 +102,7 @@ class ClientEntityControllerIntegrationTest extends Specification {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
-        1 * mockClientService.get("ID") >> { throw new ResourceNotFoundException() }
-        0 * mockClientService.update(_)
+        1 * mockClientService.update(_) >> { throw new ResourceNotFoundException() }
 
         expect:
         response.status == NOT_FOUND.value()
@@ -133,11 +118,7 @@ class ClientEntityControllerIntegrationTest extends Specification {
         def content = new JsonSlurper().parseText(response.contentAsString)
 
         then:
-        1 * mockClientService.get("1") >> {
-            def mockClient = new ClientEntity()
-            mockClient.id = "1"
-            mockClient
-        }
+        1 * mockClientService.get("1") >> ClientDto.builder().id("1").build()
 
         expect:
         response.status == OK.value()
@@ -168,22 +149,20 @@ class ClientEntityControllerIntegrationTest extends Specification {
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
-        1 * mockClientService.getAll(_ as Pageable) >> { new PageImpl<>(List.of(new ClientEntity())) }
+        1 * mockClientService.getAll(_ as Pageable, "") >> { new PageImpl<>(List.of(new ClientDto())) }
 
         expect:
         response.status == OK.value()
     }
 
-    def "should delete a client page"() {
+    def "should return a clients page filter by search query"() {
         when:
         def response = mockMvc.perform(get("$baseApiUrl")
-                .queryParam("page", "1")
-                .queryParam("size", "10")
-                .queryParam("sort", "id,desc")
+                .queryParam("q", "test")
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
-        1 * mockClientService.getAll(_ as Pageable) >> { new PageImpl<>(List.of(new ClientEntity())) }
+        1 * mockClientService.getAll(_ as Pageable, "test") >> { new PageImpl<>(List.of(new ClientEntity())) }
 
         expect:
         response.status == OK.value()

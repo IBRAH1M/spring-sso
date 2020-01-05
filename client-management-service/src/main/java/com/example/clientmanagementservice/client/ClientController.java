@@ -42,14 +42,13 @@ public class ClientController {
         }
 
         try {
-            clientService.get(client.getId());
+            ClientDto clientDto = clientService.update(client);
+            log.info("request to update client done.");
+            return ResponseEntity.ok(clientDto);
 
         } catch (ResourceNotFoundException exc) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested client id to be updated does not exist", exc);
         }
-
-        log.info("request to update client done.");
-        return ResponseEntity.ok(clientService.update(client));
     }
 
     @GetMapping(value = "clients/{clientId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,10 +64,11 @@ public class ClientController {
     }
 
     @GetMapping(value = "clients", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<ClientDto>> getAllClients(Pageable pageable, @RequestParam(value = "q", required = false) String searchQuery) {
+    public ResponseEntity<Page<ClientDto>> getAllClients(Pageable pageable, @RequestParam(value = "q", required = false, defaultValue = "") String searchQuery) {
         log.info("requested to get all clients page: {} ...", pageable);
+        Page<ClientDto> clientDtos = clientService.getAll(pageable, searchQuery);
         log.info("request to get all clients done.");
-        return ResponseEntity.ok(clientService.getAll(pageable, searchQuery));
+        return ResponseEntity.ok(clientDtos);
     }
 
     @DeleteMapping(value = "clients/{clientId}", produces = MediaType.APPLICATION_JSON_VALUE)
