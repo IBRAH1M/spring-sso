@@ -8,7 +8,7 @@ import spock.lang.Subject
 import javax.persistence.EntityManager
 
 @DataJpaTest
-class UserEntityRepositoryIntegrationTest extends Specification {
+class UserRepositoryIntegrationTest extends Specification {
 
     @Autowired
     private EntityManager entityManager
@@ -43,5 +43,24 @@ class UserEntityRepositoryIntegrationTest extends Specification {
 
         then:
         persistedUser.id == '2'
+    }
+
+    def "should retrieve users page filtered by search query"() {
+        given:
+        def user1 = new UserEntity()
+        user1.setName("NAME")
+        user1.setNameAr("NAME_AR")
+        def user2 = new UserEntity()
+        user2.setName("TEST")
+        user2.setNameAr("TEST_AR")
+        entityManager.persist(user1)
+        entityManager.persist(user2)
+
+        when:
+        def usersPage = userRepository.findBySearchQuery(PageRequest.of(0, 2), "NAME")
+
+        then:
+        usersPage.totalElements == 1
+        usersPage.content[0].name == 'NAME'
     }
 }

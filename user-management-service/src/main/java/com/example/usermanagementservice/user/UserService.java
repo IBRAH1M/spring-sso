@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final UserMapper UserMapper;
 
     @Transactional
-    public UserDto save(UserDto clientDto) {
-        log.info("Saving client....");
-        UserEntity existingUserEntity = userRepository.save(userMapper.toEntity(clientDto));
-        log.info("Saving client done. Client id: {}", existingUserEntity.getId());
-        return userMapper.toDto(existingUserEntity);
+    public UserDto save(UserDto userDto) {
+        log.info("Saving user....");
+        UserEntity existingUserEntity = userRepository.save(UserMapper.toEntity(userDto));
+        log.info("Saving user done. User id: {}", existingUserEntity.getId());
+        return UserMapper.toDto(existingUserEntity);
     }
 
     @Transactional
@@ -37,46 +37,45 @@ public class UserService {
                     log.info("Updating user done.");
                     return existingUserEntity;
                 })
-                .map(userMapper::toDto)
+                .map(UserMapper::toDto)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public Page<UserDto> getAll(Pageable pageable, String searchQuery) {
-        Page<UserDto> clientPage;
+        Page<UserDto> userPage;
         if (!searchQuery.isEmpty()) {
-            log.info("Getting all clients filtered by query: {}, and page: {} ....", searchQuery, pageable);
-            clientPage = userRepository.findBySearchQuery(searchQuery, pageable).map(userMapper::toDto);
-            log.info("Getting all clients found: {}.", clientPage.getTotalElements());
+            log.info("Getting all users filtered by query: {}, and page: {} ....", searchQuery, pageable);
+            userPage = userRepository.findBySearchQuery(pageable, searchQuery).map(UserMapper::toDto);
         } else {
-            log.info("Getting all clients {} ....", pageable);
-            clientPage = userRepository.findAll(pageable).map(userMapper::toDto);
-            log.info("Getting all clients found: {}.", clientPage.getTotalElements());
+            log.info("Getting all users {} ....", pageable);
+            userPage = userRepository.findAll(pageable).map(UserMapper::toDto);
         }
-        return clientPage;
+        log.info("Getting all users done found: {}.", userPage.getTotalElements());
+        return userPage;
     }
 
-//    @Transactional(readOnly = true)
-//    public UserDto get(String id) {
-//        log.info("Getting client by id: {} ....", id);
-//        Optional<UserDto> clientDto = userRepository.findById(id).map(userMapper::toDto);
-//
-//        if (clientDto.isPresent()) log.info("Getting client by id found: {}.", clientDto);
-//        else log.error("Getting client by id: {} not found.", id);
-//
-//        return clientDto;
-//    }
+    @Transactional(readOnly = true)
+    public UserDto get(String id) {
+        log.info("Getting user by id: {} ....", id);
+        return userRepository.findById(id)
+                .map(userEntity -> {
+                    log.info("Getting user by id found: {}.", userEntity);
+                    return userEntity;
+                })
+                .map(UserMapper::toDto)
+                .orElseThrow(ResourceNotFoundException::new);
+    }
 
-//    @Transactional
-//    public void delete(UserDto client) {
-//        log.info("Deleting client: {} ....", client);
-//        Optional<UserEntity> existingClient = userRepository.findById(client.getId());
-//
-//        if (existingClient.isPresent()) {
-//            existingClient.get().setDeleted(true);
-//            userRepository.save(existingClient.get());
-//            log.info("Deleting client: {} done.", existingClient);
-//
-//        } else log.error("Deleting client: {} not found.", client);
-//    }
+    @Transactional
+    public void delete(UserDto user) {
+        log.info("Deleting user: {} ....", user);
+        userRepository.findById(user.getId())
+                .map(existingUser -> {
+                    userRepository.delete(existingUser);
+                    log.info("Deleting user: {} done.", existingUser);
+                    return existingUser;
+                })
+                .orElseThrow(ResourceNotFoundException::new);
+    }
 }

@@ -1,11 +1,12 @@
 package com.example.usermanagementservice.user;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, componentModel = "spring", uses = {UserEntity.class, UserDto.class})
 interface UserMapper {
 
-    UserDto toDto(UserEntity user);
-
     UserEntity toEntity(UserDto userDto);
+
+    UserDto toDto(UserEntity userEntity);
 }
