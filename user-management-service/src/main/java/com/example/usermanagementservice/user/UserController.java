@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,13 +18,13 @@ import java.net.URISyntaxException;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("api/v1/")
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping(value = "users/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) throws URISyntaxException {
+    public ResponseEntity<UserDto> createUser(@Validated @RequestBody UserDto user) throws URISyntaxException {
         log.info("requested to create a new user : {}", user);
         if (!(user.getId() == null || user.getId().trim().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User to be saved shouldn't have an id");
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @PutMapping(value = "users/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user) {
+    public ResponseEntity<UserDto> updateUser(@Validated @RequestBody UserDto user) {
         log.info("requested to update user : {}", user);
         if (user.getId() == null || user.getId().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User to be updated should have an id");

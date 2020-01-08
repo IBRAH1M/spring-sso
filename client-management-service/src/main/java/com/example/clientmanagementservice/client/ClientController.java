@@ -8,22 +8,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@RequiredArgsConstructor
 @Slf4j
-@RequestMapping(path = "/api/v1/")
+@RequiredArgsConstructor
 @RestController
+@RequestMapping("api/v1/")
 public class ClientController {
 
     private final ClientService clientService;
 
     @PostMapping(value = "clients/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientDto> createClient(@RequestBody ClientDto client) throws URISyntaxException {
+    public ResponseEntity<ClientDto> createClient(@Validated @RequestBody ClientDto client) throws URISyntaxException {
         log.info("requested to create a new client : {}", client);
         if (!(client.getId() == null || client.getId().trim().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client to be saved shouldn't have an id");
@@ -35,7 +36,7 @@ public class ClientController {
     }
 
     @PutMapping(value = "clients/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientDto> updateClient(@RequestBody ClientDto client) {
+    public ResponseEntity<ClientDto> updateClient(@Validated @RequestBody ClientDto client) {
         log.info("requested to update client : {}", client);
         if (client.getId() == null || client.getId().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client to be updated should have an id");

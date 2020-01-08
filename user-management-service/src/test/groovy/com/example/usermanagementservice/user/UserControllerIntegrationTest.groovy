@@ -26,7 +26,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def "should save a user"() {
         given:
-        def userToSave = '{"id":""}'
+        def userToSave = '{"id":"", "name":"", "nameAr":""}'
 
         when:
         def response = mockMvc.perform(post("$baseApiUrl/")
@@ -58,9 +58,25 @@ class UserControllerIntegrationTest extends Specification {
         response.status == BAD_REQUEST.value()
     }
 
+    def "should not save user when empty json is given in the request"() {
+        given:
+        def userToSave = '{}'
+
+        when:
+        def response = mockMvc.perform(post("$baseApiUrl/")
+                .content(userToSave)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
+
+        then:
+        0 * mockUserService.save(_)
+
+        expect:
+        response.status == BAD_REQUEST.value()
+    }
+
     def "should update a user"() {
         given:
-        def userToUpdate = '{"id":"1"}'
+        def userToUpdate = '{"id":"1", "name":"NAME", "nameAr":"NAME_AR"}'
 
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
@@ -69,11 +85,13 @@ class UserControllerIntegrationTest extends Specification {
         def content = new JsonSlurper().parseText(response.contentAsString)
 
         then:
-        1 * mockUserService.update(_) >> UserDto.builder().id("1").build()
+        1 * mockUserService.update(_) >> UserDto.builder().id("1").name("NAME").nameAr("NAME_AR").build()
 
         expect:
         response.status == OK.value()
         content.id == "1"
+        content.name == "NAME"
+        content.nameAr == "NAME_AR"
     }
 
     def "should not update a user when id isn't given in the request"() {
@@ -94,7 +112,7 @@ class UserControllerIntegrationTest extends Specification {
 
     def "should not update a user when id does not exist"() {
         given:
-        def userToUpdate = '{"id":"ID"}'
+        def userToUpdate = '{"id":"ID", "name":"", "nameAr":""}'
 
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
@@ -106,6 +124,22 @@ class UserControllerIntegrationTest extends Specification {
 
         expect:
         response.status == NOT_FOUND.value()
+    }
+
+    def "should not update user when empty json is given in the request"() {
+        given:
+        def userToUpdate = '{}'
+
+        when:
+        def response = mockMvc.perform(put("$baseApiUrl/")
+                .content(userToUpdate)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
+
+        then:
+        0 * mockUserService.update(_)
+
+        expect:
+        response.status == BAD_REQUEST.value()
     }
 
     def "should return a user given its id"() {

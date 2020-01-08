@@ -26,7 +26,7 @@ class ClientControllerIntegrationTest extends Specification {
 
     def "should save a client"() {
         given:
-        def clientToSave = '{"id":""}'
+        def clientToSave = '{"id":"", "name":"", "nameAr":""}'
 
         when:
         def response = mockMvc.perform(post("$baseApiUrl/")
@@ -58,9 +58,25 @@ class ClientControllerIntegrationTest extends Specification {
         response.status == BAD_REQUEST.value()
     }
 
+    def "should not save client when empty json is given in the request"() {
+        given:
+        def clientToSave = '{}'
+
+        when:
+        def response = mockMvc.perform(post("$baseApiUrl/")
+                .content(clientToSave)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
+
+        then:
+        0 * mockClientService.save(_)
+
+        expect:
+        response.status == BAD_REQUEST.value()
+    }
+
     def "should update a client"() {
         given:
-        def clientToUpdate = '{"id":"1"}'
+        def clientToUpdate = '{"id":"1", "name":"NAME", "nameAr":"NAME_AR"}'
 
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
@@ -69,11 +85,13 @@ class ClientControllerIntegrationTest extends Specification {
         def content = new JsonSlurper().parseText(response.contentAsString)
 
         then:
-        1 * mockClientService.update(_) >> ClientDto.builder().id("1").build()
+        1 * mockClientService.update(_) >> ClientDto.builder().id("1").name("NAME").nameAr("NAME_AR").build()
 
         expect:
         response.status == OK.value()
         content.id == "1"
+        content.name == "NAME"
+        content.nameAr == "NAME_AR"
     }
 
     def "should not update a client when id isn't given in the request"() {
@@ -94,7 +112,7 @@ class ClientControllerIntegrationTest extends Specification {
 
     def "should not update a client when id does not exist"() {
         given:
-        def clientToUpdate = '{"id":"ID"}'
+        def clientToUpdate = '{"id":"ID", "name":"", "nameAr":""}'
 
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
@@ -106,6 +124,22 @@ class ClientControllerIntegrationTest extends Specification {
 
         expect:
         response.status == NOT_FOUND.value()
+    }
+
+    def "should not update client when empty json is given in the request"() {
+        given:
+        def clientToUpdate = '{}'
+
+        when:
+        def response = mockMvc.perform(put("$baseApiUrl/")
+                .content(clientToUpdate)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
+
+        then:
+        0 * mockClientService.update(_)
+
+        expect:
+        response.status == BAD_REQUEST.value()
     }
 
     def "should return a client given its id"() {
@@ -149,7 +183,7 @@ class ClientControllerIntegrationTest extends Specification {
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
-        1 * mockClientService.getAll(_ as Pageable, "") >> { new PageImpl<>(List.of(new ClientDto())) }
+        1 * mockClientService.getAll(_ as Pageable, "") >> { new PageImpl<>(List.of(ClientDto.builder().build())) }
 
         expect:
         response.status == OK.value()

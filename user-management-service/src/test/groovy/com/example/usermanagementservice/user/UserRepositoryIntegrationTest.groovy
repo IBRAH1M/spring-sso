@@ -1,13 +1,18 @@
 package com.example.usermanagementservice.user
 
+import com.example.usermanagementservice.UserManagementServiceConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
+import org.springframework.data.domain.PageRequest
 import spock.lang.Specification
 import spock.lang.Subject
 
 import javax.persistence.EntityManager
 
 @DataJpaTest
+@Import(UserManagementServiceConfiguration.class)
+//@WithMockUser(username = "testuser")
 class UserRepositoryIntegrationTest extends Specification {
 
     @Autowired
@@ -22,7 +27,7 @@ class UserRepositoryIntegrationTest extends Specification {
         userRepository.deleteAll()
     }
 
-    def "should save a user to the database"() {
+    def "should save a user to the database with auditing info"() {
         given:
         def user = new UserEntity()
 
@@ -30,19 +35,12 @@ class UserRepositoryIntegrationTest extends Specification {
         def persistedUser = userRepository.save(user)
 
         then:
-        def retrievedUser = entityManager.find(UserEntity, "1")
+        def retrievedUser = entityManager.find(UserEntity, persistedUser.id)
         retrievedUser.id == persistedUser.id
-    }
-
-    def "should retrieve a user from the database given it id"() {
-        given:
-        entityManager.persist(new UserEntity())
-
-        when:
-        def persistedUser = userRepository.findById("2").get()
-
-        then:
-        persistedUser.id == '2'
+        retrievedUser.createdBy != null
+        retrievedUser.createdDate != null
+        retrievedUser.lastModifiedBy != null
+        retrievedUser.lastModifiedDate != null
     }
 
     def "should retrieve users page filtered by search query"() {

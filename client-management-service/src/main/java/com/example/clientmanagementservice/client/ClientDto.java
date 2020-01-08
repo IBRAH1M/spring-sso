@@ -2,6 +2,8 @@ package com.example.clientmanagementservice.client;
 
 import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Builder
@@ -13,10 +15,12 @@ import java.io.Serializable;
 public class ClientDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     private String id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String nameAr;
 }
-

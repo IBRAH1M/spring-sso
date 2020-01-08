@@ -8,22 +8,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ClientService {
 
     private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
+    private final ClientMapper ClientMapper;
 
     @Transactional
     public ClientDto save(ClientDto clientDto) {
         log.info("Saving client....");
-        ClientEntity existingClientEntity = clientRepository.save(clientMapper.toEntity(clientDto));
+        ClientEntity existingClientEntity = clientRepository.save(ClientMapper.toEntity(clientDto));
         log.info("Saving client done. Client id: {}", existingClientEntity.getId());
-        return clientMapper.toDto(existingClientEntity);
+        return ClientMapper.toDto(existingClientEntity);
     }
 
     @Transactional
@@ -39,7 +37,7 @@ public class ClientService {
                     log.info("Updating client done.");
                     return existingClientEntity;
                 })
-                .map(clientMapper::toDto)
+                .map(ClientMapper::toDto)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
@@ -48,10 +46,10 @@ public class ClientService {
         Page<ClientDto> clientPage;
         if (!searchQuery.isEmpty()) {
             log.info("Getting all clients filtered by query: {}, and page: {} ....", searchQuery, pageable);
-            clientPage = clientRepository.findBySearchQuery(pageable, searchQuery).map(clientMapper::toDto);
+            clientPage = clientRepository.findBySearchQuery(pageable, searchQuery).map(ClientMapper::toDto);
         } else {
             log.info("Getting all clients {} ....", pageable);
-            clientPage = clientRepository.findAll(pageable).map(clientMapper::toDto);
+            clientPage = clientRepository.findAll(pageable).map(ClientMapper::toDto);
         }
         log.info("Getting all clients done found: {}.", clientPage.getTotalElements());
         return clientPage;
@@ -65,7 +63,7 @@ public class ClientService {
                     log.info("Getting client by id found: {}.", clientEntity);
                     return clientEntity;
                 })
-                .map(clientMapper::toDto)
+                .map(ClientMapper::toDto)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 

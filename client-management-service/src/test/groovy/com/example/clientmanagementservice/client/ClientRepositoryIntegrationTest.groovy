@@ -1,8 +1,9 @@
 package com.example.clientmanagementservice.client
 
-
+import com.example.clientmanagementservice.ClientManagementServiceConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import spock.lang.Specification
 import spock.lang.Subject
@@ -10,6 +11,8 @@ import spock.lang.Subject
 import javax.persistence.EntityManager
 
 @DataJpaTest
+@Import(ClientManagementServiceConfiguration.class)
+//@WithMockClient(clientname = "testclient")
 class ClientRepositoryIntegrationTest extends Specification {
 
     @Autowired
@@ -24,7 +27,7 @@ class ClientRepositoryIntegrationTest extends Specification {
         clientRepository.deleteAll()
     }
 
-    def "should save a client to the database"() {
+    def "should save a client to the database with auditing info"() {
         given:
         def client = new ClientEntity()
 
@@ -32,19 +35,12 @@ class ClientRepositoryIntegrationTest extends Specification {
         def persistedClient = clientRepository.save(client)
 
         then:
-        def retrievedClient = entityManager.find(ClientEntity, "1")
+        def retrievedClient = entityManager.find(ClientEntity, persistedClient.id)
         retrievedClient.id == persistedClient.id
-    }
-
-    def "should retrieve a client from the database given it id"() {
-        given:
-        entityManager.persist(new ClientEntity())
-
-        when:
-        def persistedClient = clientRepository.findById("2").get()
-
-        then:
-        persistedClient.id == '2'
+        retrievedClient.createdBy != null
+        retrievedClient.createdDate != null
+        retrievedClient.lastModifiedBy != null
+        retrievedClient.lastModifiedDate != null
     }
 
     def "should retrieve clients page filtered by search query"() {
