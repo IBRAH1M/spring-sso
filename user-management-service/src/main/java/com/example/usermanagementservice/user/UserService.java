@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper UserMapper;
+    private final UserMapper userMapper;
 
     @Transactional
     public UserDto save(UserDto userDto) {
         log.info("Saving user....");
-        UserEntity existingUserEntity = userRepository.save(UserMapper.toEntity(userDto));
+        UserEntity existingUserEntity = userRepository.save(userMapper.toEntity(userDto));
         log.info("Saving user done. User id: {}", existingUserEntity.getId());
-        return UserMapper.toDto(existingUserEntity);
+        return userMapper.toDto(existingUserEntity);
     }
 
     @Transactional
@@ -37,7 +37,7 @@ public class UserService {
                     log.info("Updating user done.");
                     return existingUserEntity;
                 })
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
@@ -46,10 +46,10 @@ public class UserService {
         Page<UserDto> userPage;
         if (!searchQuery.isEmpty()) {
             log.info("Getting all users filtered by query: {}, and page: {} ....", searchQuery, pageable);
-            userPage = userRepository.findBySearchQuery(pageable, searchQuery).map(UserMapper::toDto);
+            userPage = userRepository.findBySearchQuery(pageable, searchQuery).map(userMapper::toDto);
         } else {
             log.info("Getting all users {} ....", pageable);
-            userPage = userRepository.findAll(pageable).map(UserMapper::toDto);
+            userPage = userRepository.findAll(pageable).map(userMapper::toDto);
         }
         log.info("Getting all users done found: {}.", userPage.getTotalElements());
         return userPage;
@@ -63,7 +63,7 @@ public class UserService {
                     log.info("Getting user by id found: {}.", userEntity);
                     return userEntity;
                 })
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
