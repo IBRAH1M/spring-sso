@@ -9,7 +9,7 @@ class UserMapperTest extends Specification {
     @Subject
     UserMapper userMapper = Mappers.getMapper(UserMapper.class)
 
-    def "should convert from entity to dto"(){
+    def "should convert from entity to dto"() {
         given:
         def userEntity = new UserEntity()
         userEntity.id = "ID"
@@ -26,7 +26,7 @@ class UserMapperTest extends Specification {
         userDto.nameAr == "NAME_AR"
     }
 
-    def "should convert from dto to entity"(){
+    def "should convert from dto to entity"() {
         given:
         def userDto = UserDto.builder().id("ID").name("NAME").nameAr("NAME_AR").build()
 

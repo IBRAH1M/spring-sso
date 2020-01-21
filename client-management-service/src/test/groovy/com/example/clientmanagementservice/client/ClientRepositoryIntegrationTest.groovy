@@ -12,7 +12,6 @@ import javax.persistence.EntityManager
 
 @DataJpaTest
 @Import(ClientManagementServiceConfiguration.class)
-//@WithMockClient(clientname = "testclient")
 class ClientRepositoryIntegrationTest extends Specification {
 
     @Autowired
