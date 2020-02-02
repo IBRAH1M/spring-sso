@@ -1,5 +1,7 @@
 package com.example.usermanagementservice.user;
 
+import com.example.usermanagementservice.client.Client;
+import com.example.usermanagementservice.client.ClientService;
 import com.example.usermanagementservice.user.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +17,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ClientService clientService;
 
     @Transactional
     public UserDto save(UserDto userDto) {
         log.info("Saving user....");
+        Client client = clientService.getClient(userDto.getClientId());
         UserEntity existingUserEntity = userRepository.save(userMapper.toEntity(userDto));
         log.info("Saving user done. User id: {}", existingUserEntity.getId());
         return userMapper.toDto(existingUserEntity);

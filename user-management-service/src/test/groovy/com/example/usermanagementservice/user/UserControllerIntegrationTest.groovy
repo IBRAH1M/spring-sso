@@ -16,13 +16,17 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 class UserControllerIntegrationTest extends Specification {
 
-    def baseApiUrl = '/api/v1/users'
-    def mockUserService = Mock(UserService.class)
+    private String baseApiUrl = '/api/v1/users'
+    private MockMvc mockMvc
+    private UserService mockUserService
     @Subject
-    UserController userController = new UserController(mockUserService)
-    protected MockMvc mockMvc = standaloneSetup(userController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .build()
+    private UserController userController
+
+    def setup() {
+        mockUserService = Mock(UserService.class)
+        userController = new UserController(mockUserService)
+        mockMvc = standaloneSetup(userController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()).build()
+    }
 
     def "should save a user"() {
         given:

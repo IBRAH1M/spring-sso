@@ -2,6 +2,7 @@ package com.example.usermanagementservice.user;
 
 import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -22,4 +23,7 @@ public class UserDto implements Serializable {
 
     @NotNull
     private String nameAr;
+
+    @NotEmpty
+    public String clientId;
 }

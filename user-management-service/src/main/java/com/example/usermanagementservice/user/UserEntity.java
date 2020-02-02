@@ -31,6 +31,9 @@ public class UserEntity {
     @Column(name = "name_ar")
     private String nameAr;
 
+    @Column(name = "client_id", nullable = false)
+    public String clientId;
+/**********************************************************************************************************************/
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;

@@ -17,12 +17,18 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 class ClientControllerIntegrationTest extends Specification {
 
     def baseApiUrl = '/api/v1/clients'
-    def mockClientService = Mock(ClientService.class)
+    private MockMvc mockMvc
+    private ClientService mockClientService
     @Subject
-    ClientController clientController = new ClientController(mockClientService)
-    protected MockMvc mockMvc = standaloneSetup(clientController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .build()
+    private ClientController clientController = new ClientController(mockClientService)
+
+    void setup() {
+        mockClientService = Mock(ClientService.class)
+        clientController = new ClientController(mockClientService)
+        mockMvc = standaloneSetup(clientController)
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .build()
+    }
 
     def "should save a client"() {
         given:

@@ -10,13 +10,20 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: password
+  h2:
+    console:
+      enabled: true
+      path: /h2
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create-drop #validate
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
 feign:
   hystrix:
     enabled: true
 application:
-  client-management-service-url: http://localhost:${server.port}/stub/
+  client-management-service-url: http://localhost:9090/
