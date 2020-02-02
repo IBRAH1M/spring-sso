@@ -1,8 +1,9 @@
 package com.example.clientmanagementservice.client;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", uses = {ClientEntity.class, ClientDto.class})
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, componentModel = "spring", uses = {ClientEntity.class, ClientDto.class})
 interface ClientMapper {
 
     ClientEntity toEntity(ClientDto clientDto);
