@@ -8,10 +8,16 @@ import spock.lang.Subject
 
 class ClientServiceTest extends Specification {
 
-    def mockClientRepository = Mock(ClientRepository.class)
-    def mockClientMapper = Mock(ClientMapper.class)
+    private ClientRepository mockClientRepository
+    private ClientMapper mockClientMapper
     @Subject
-    ClientService clientService = new ClientService(mockClientRepository, mockClientMapper)
+    private ClientService clientService
+
+    void setup() {
+        mockClientRepository = Mock(ClientRepository.class)
+        mockClientMapper = Mock(ClientMapper.class)
+        clientService = new ClientService(mockClientRepository, mockClientMapper)
+    }
 
     def "should save a client to the database"() {
         given:

@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserManagementServiceE2ETests extends Specification {
 
     def final BASE_API_URL = '/api/v1/users'
-    def final STUB_CLIENTS_URL = "/stub/api/v1/clients"
 
     @Autowired
     protected MockMvc mockMvc
@@ -119,11 +118,11 @@ class UserManagementServiceE2ETests extends Specification {
                 .andExpect(status().isNotFound())
     }
 
-    public static String getUserPayload(String id, String name, String nameAr, String clientId) {
+    private static String getUserPayload(String id, String name, String nameAr, String clientId) {
         """{"id":"${id}", "name":"${name}","nameAr":"${nameAr}","clientId":"${clientId}"}"""
     }
 
-    public static String getClientPayload(String id) {
+    private static String getClientPayload(String id) {
         """{"id":"${id}"}"""
     }
 }

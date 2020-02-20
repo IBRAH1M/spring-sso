@@ -1,6 +1,8 @@
 package com.example.usermanagementservice.user
 
-import com.example.usermanagementservice.user.exception.ResourceNotFoundException
+import com.example.usermanagementservice.client.Client
+import com.example.usermanagementservice.client.ClientService
+import com.example.usermanagementservice.exception.ResourceNotFoundException
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import spock.lang.Specification
@@ -8,20 +10,29 @@ import spock.lang.Subject
 
 class UserServiceTest extends Specification {
 
-    def mockUserRepository = Mock(UserRepository.class)
-    def mockUserMapper = Mock(UserMapper.class)
+    UserRepository mockUserRepository
+    UserMapper mockUserMapper
+    ClientService mockClientService
     @Subject
-    UserService userService = new UserService(mockUserRepository, mockUserMapper)
+    UserService userService
+
+    void setup() {
+        mockUserRepository = Mock(UserRepository.class)
+        mockUserMapper = Mock(UserMapper.class)
+        mockClientService = Mock(ClientService.class)
+        userService = new UserService(mockUserRepository, mockUserMapper, mockClientService)
+    }
 
     def "should save a user to the database"() {
         given:
-        UserDto userDto = UserDto.builder().build()
+        UserDto userDto = UserDto.builder().clientId("CLIENT_ID").build()
         UserEntity userEntity = new UserEntity()
 
         when:
         def savedUser = userService.save(userDto)
 
         then:
+        1 * mockClientService.getClient("CLIENT_ID") >> Client.builder().build()
         1 * mockUserMapper.toEntity(userDto) >> userEntity
         1 * mockUserRepository.save(userEntity) >> {
             def mockUser = new UserEntity()
@@ -32,6 +43,21 @@ class UserServiceTest extends Specification {
 
         expect:
         savedUser.id != null
+    }
+
+    def "should not save a user if client does not exists"() {
+        given:
+        UserDto userDto = UserDto.builder().clientId("CLIENT_ID").build()
+
+        when:
+        userService.save(userDto)
+
+        then:
+        1 * mockClientService.getClient(_) >> {throw new ResourceNotFoundException()}
+        0 * mockUserMapper.toEntity(_)
+        0 * mockUserRepository.save(_)
+        0 * mockUserMapper.toDto(_)
+        thrown(ResourceNotFoundException)
     }
 
     def "should update an existing user"() {

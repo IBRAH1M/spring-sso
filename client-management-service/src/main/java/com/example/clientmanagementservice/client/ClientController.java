@@ -52,19 +52,20 @@ public class ClientController {
         }
     }
 
-    @GetMapping(value = "clients/{clientId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "clients/{clientId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientDto> getClient(@PathVariable("clientId") String clientId) {
         log.info("requested to get client with id: {}.", clientId);
         try {
+            ClientDto client = clientService.get(clientId);
             log.info("requested to get client with id: {} done.", clientId);
-            return ResponseEntity.ok(clientService.get(clientId));
+            return ResponseEntity.ok(client);
 
         } catch (ResourceNotFoundException exc) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested client id does not exist", exc);
         }
     }
 
-    @GetMapping(value = "clients", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "clients", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ClientDto>> getAllClients(Pageable pageable, @RequestParam(value = "q", required = false, defaultValue = "") String searchQuery) {
         log.info("requested to get all clients page: {} ...", pageable);
         Page<ClientDto> clientDtos = clientService.getAll(pageable, searchQuery);
@@ -72,7 +73,7 @@ public class ClientController {
         return ResponseEntity.ok(clientDtos);
     }
 
-    @DeleteMapping(value = "clients/{clientId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "clients/{clientId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteClient(@PathVariable("clientId") String clientId) {
         log.info("requested to delete client id: {} ...", clientId);
         try {

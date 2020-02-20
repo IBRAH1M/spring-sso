@@ -12,7 +12,6 @@ import javax.persistence.EntityManager
 
 @DataJpaTest
 @Import(UserManagementServiceConfiguration.class)
-//@WithMockUser(username = "testuser")
 class UserRepositoryIntegrationTest extends Specification {
 
     @Autowired
@@ -30,6 +29,7 @@ class UserRepositoryIntegrationTest extends Specification {
     def "should save a user to the database with auditing info"() {
         given:
         def user = new UserEntity()
+        user.setClientId("CLIENT_ID")
 
         when:
         def persistedUser = userRepository.save(user)
@@ -48,9 +48,11 @@ class UserRepositoryIntegrationTest extends Specification {
         def user1 = new UserEntity()
         user1.setName("NAME")
         user1.setNameAr("NAME_AR")
+        user1.setClientId("CLIENT_ID")
         def user2 = new UserEntity()
         user2.setName("TEST")
         user2.setNameAr("TEST_AR")
+        user2.setClientId("CLIENT_ID")
         entityManager.persist(user1)
         entityManager.persist(user2)
 

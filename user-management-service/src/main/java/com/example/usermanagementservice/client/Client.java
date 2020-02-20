@@ -1,10 +1,15 @@
 package com.example.usermanagementservice.client;
 
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
-@Data
+@Builder
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@Setter(value = AccessLevel.PACKAGE)
+@Getter
+@ToString
 public class Client implements Serializable {
 
     private static final long serialVersionUID = 1L;

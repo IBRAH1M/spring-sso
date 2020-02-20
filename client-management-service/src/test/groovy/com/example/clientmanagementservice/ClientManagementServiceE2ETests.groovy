@@ -9,8 +9,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -81,6 +82,7 @@ class ClientManagementServiceE2ETests extends Specification {
                 .andExpect(jsonPath('$.pageable.sort.sorted').value(true))
                 .andExpect(jsonPath('$.content[0].name').value("NAME1"))
     }
+
     def "should delete an existing client by id"() {
         given:
         def client = new JsonSlurper().parseText(mockMvc.perform(post("$baseApiUrl/")

@@ -1,6 +1,6 @@
 package com.example.usermanagementservice.user
 
-import com.example.usermanagementservice.user.exception.ResourceNotFoundException
+import com.example.usermanagementservice.exception.ResourceNotFoundException
 import groovy.json.JsonSlurper
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -29,12 +29,9 @@ class UserControllerIntegrationTest extends Specification {
     }
 
     def "should save a user"() {
-        given:
-        def userToSave = '{"id":"", "name":"", "nameAr":""}'
-
         when:
         def response = mockMvc.perform(post("$baseApiUrl/")
-                .content(userToSave)
+                .content(getUserPayload("", "", "", "CLIENT_ID"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
         def content = new JsonSlurper().parseText(response.contentAsString)
 
@@ -44,6 +41,19 @@ class UserControllerIntegrationTest extends Specification {
         expect:
         response.status == CREATED.value()
         content.id == "1"
+    }
+
+    def "should not save user if client id not found"() {
+        when:
+        def response = mockMvc.perform(post("$baseApiUrl/")
+                .content(getUserPayload("", "", "", "CLIENT_ID"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
+
+        then:
+        1 * mockUserService.save(_) >> {throw new ResourceNotFoundException()}
+
+        expect:
+        response.status == BAD_REQUEST.value()
     }
 
     def "should not save a user when id is given in the request"() {
@@ -79,12 +89,9 @@ class UserControllerIntegrationTest extends Specification {
     }
 
     def "should update a user"() {
-        given:
-        def userToUpdate = '{"id":"1", "name":"NAME", "nameAr":"NAME_AR"}'
-
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
-                .content(userToUpdate)
+                .content(getUserPayload("1", "NAME", "NAME_AR", "CLIENT_ID"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
         def content = new JsonSlurper().parseText(response.contentAsString)
 
@@ -99,12 +106,9 @@ class UserControllerIntegrationTest extends Specification {
     }
 
     def "should not update a user when id isn't given in the request"() {
-        given:
-        def userToUpdate = '{"id":""}'
-
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
-                .content(userToUpdate)
+                .content(getUserPayload("", "", "", "CLIENT_ID"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
@@ -115,12 +119,9 @@ class UserControllerIntegrationTest extends Specification {
     }
 
     def "should not update a user when id does not exist"() {
-        given:
-        def userToUpdate = '{"id":"ID", "name":"", "nameAr":""}'
-
         when:
         def response = mockMvc.perform(put("$baseApiUrl/")
-                .content(userToUpdate)
+                .content(getUserPayload("ID", "", "", "CLIENT_ID"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn().getResponse()
 
         then:
@@ -236,5 +237,9 @@ class UserControllerIntegrationTest extends Specification {
 
         expect:
         response.status == NOT_FOUND.value()
+    }
+
+    private static String getUserPayload(String id, String name, String nameAr, String clientId) {
+        """{"id":"${id}", "name":"${name}","nameAr":"${nameAr}","clientId":"${clientId}"}"""
     }
 }

@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
         fallback = ClientManagementServiceClient.ClientManagementServiceClientFallback.class)
 interface ClientManagementServiceClient {
 
-    @GetMapping(value = "api/v1/clients/{clientId}", produces = "application/json")
+    @GetMapping(value = "/api/v1/clients/{clientId}", produces = "application/json")
     Client getClientById(@PathVariable("clientId") String clientId);
+
+    @GetMapping(value = "/actuator/health", produces = "application/json")
+    String getServiceHealth();
 
     @Component
     class ClientManagementServiceClientFallback implements ClientManagementServiceClient {
@@ -19,6 +22,11 @@ interface ClientManagementServiceClient {
         @Override
         public Client getClientById(String clientId) {
             return null;
+        }
+
+        @Override
+        public String getServiceHealth() {
+            return "Down";
         }
     }
 }

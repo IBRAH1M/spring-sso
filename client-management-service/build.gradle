@@ -1,17 +1,19 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'java'
-    id 'groovy'
-    id 'idea'
+    id "org.springframework.boot" version "2.2.2.RELEASE"
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id "org.springframework.cloud.contract" version "2.2.1.RELEASE"
+    id "java"
+    id "groovy"
+    id "idea"
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+group = "com.example"
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = "11"
 
 ext {
-    set('springCloudVersion', 'Hoxton.SR1')
+    set("springCloudVersion", "Hoxton.SR1")
+    set("springContractVersion", "2.2.1.RELEASE")
 }
 
 repositories {
@@ -22,27 +24,37 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-contract-dependencies:${springContractVersion}"
     }
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-//    implementation 'org.flywaydb:flyway-core'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+//    implementation "org.flywaydb:flyway-core"
 
-    implementation 'org.mapstruct:mapstruct:1.3.1.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.3.1.Final'
+    implementation "org.mapstruct:mapstruct:1.3.1.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.3.1.Final"
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
-    testImplementation 'org.codehaus.groovy:groovy-all:2.5.8'
-    testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
-    testImplementation 'org.spockframework:spock-spring:1.3-groovy-2.5'
+    testImplementation "org.codehaus.groovy:groovy-all:2.5.8"
+    testImplementation "org.spockframework:spock-core:1.3-groovy-2.5"
+    testImplementation "org.spockframework:spock-spring:1.3-groovy-2.5"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-verifier"
 
-//    testRuntime 'com.h2database:h2'
-    runtimeOnly 'com.h2database:h2'
+//    testRuntime "com.h2database:h2"
+    runtimeOnly "com.h2database:h2"
+}
+
+contracts {
+    testFramework = "Spock"
+    testMode = "MockMvc"
+    baseClassForTests = "com.example.clientmanagementservice.ClientManagementServiceContractsBase"
+    contractsDslDir = project.file("${project.rootDir}/src/test/resources/contracts/clientmanagementservice")
 }

@@ -25,5 +25,5 @@ public class UserDto implements Serializable {
     private String nameAr;
 
     @NotEmpty
-    public String clientId;
+    private String clientId;
 }

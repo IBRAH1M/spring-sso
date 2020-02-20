@@ -2,7 +2,7 @@ package com.example.usermanagementservice.user;
 
 import com.example.usermanagementservice.client.Client;
 import com.example.usermanagementservice.client.ClientService;
-import com.example.usermanagementservice.user.exception.ResourceNotFoundException;
+import com.example.usermanagementservice.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,13 @@ public class UserService {
     @Transactional
     public UserDto save(UserDto userDto) {
         log.info("Saving user....");
-        Client client = clientService.getClient(userDto.getClientId());
+        try {
+            clientService.getClient(userDto.getClientId());
+        } catch (ResourceNotFoundException ex) {
+            log.error("Client with id:{}. Not found.", userDto.getClientId());
+            ex.printStackTrace();
+            throw ex;
+        }
         UserEntity existingUserEntity = userRepository.save(userMapper.toEntity(userDto));
         log.info("Saving user done. User id: {}", existingUserEntity.getId());
         return userMapper.toDto(existingUserEntity);

@@ -1,6 +1,6 @@
 package com.example.usermanagementservice.user;
 
-import com.example.usermanagementservice.user.exception.ResourceNotFoundException;
+import com.example.usermanagementservice.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,8 +29,12 @@ public class UserController {
         if (!(user.getId() == null || user.getId().trim().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User to be saved shouldn't have an id");
         }
-
-        UserDto savedUser = userService.save(user);
+        UserDto savedUser;
+        try {
+            savedUser = userService.save(user);
+        } catch (ResourceNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided client id not found.");
+        }
         log.info("request to create a new user done.");
         return ResponseEntity.created(new URI("/api/v1/users/" + savedUser.getId())).body(savedUser);
     }

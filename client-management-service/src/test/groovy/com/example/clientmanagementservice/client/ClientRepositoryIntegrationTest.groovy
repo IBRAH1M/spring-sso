@@ -19,9 +19,9 @@ class ClientRepositoryIntegrationTest extends Specification {
 
     @Subject
     @Autowired
-    ClientRepository clientRepository
+    private ClientRepository clientRepository
 
-    def cleanup() {
+    void cleanup() {
         println('Cleaning up after a test!')
         clientRepository.deleteAll()
     }
